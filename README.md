@@ -41,6 +41,10 @@ After the target device receives two matrices of a given job it will perform the
 ╚════════╩════════╩═════════════════╩═══════════════╩══════════╝
 ```
 
+TODO tomorrow:
+- Make packet gen script (Python probably)
+- Setup ICEStick environment
+
 
 
 
