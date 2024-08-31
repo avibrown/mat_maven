@@ -1,6 +1,6 @@
 ### mat maven
 
-A dedicated matrix multiplication device project for self learning, in three phases:
+A dedicated matrix multiplication device project to make me more powerful, in three phases:
 
 1. On FPGA (Lattice ICEStick) sending packets over UART
 2. On same FPGA sending packets over 100GbE with an ethernet PHY PMOD 
