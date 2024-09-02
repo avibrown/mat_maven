@@ -51,6 +51,14 @@ TODO tomorrow:
 
 Getting the FPGA toolchain setup and hopefully a simple LED blink. I have done this before but on a different machine. Using this guide: https://www.digikey.com/en/maker/projects/introduction-to-fpga-part-2-toolchain-setup/563a9518cd11466fb6a75cf3cb684d6d
 
+...
+
+Got LEDs blinking. Tomorrow will start working on the UART.
+
+---
+
+3 - 
+
 
 
 
