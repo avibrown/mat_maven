@@ -2,25 +2,25 @@
 
 A dedicated matrix multiplication device project to make me more powerful, in three phases:
 
-1. On FPGA (Lattice ICEStick) sending packets over UART
-2. On same FPGA sending packets over 100GbE with an ethernet PHY PMOD 
+1. On FPGA (Lattice ICEStick) receiving packets over UART
+2. On same FPGA receiving packets over 100GbE with an ethernet PHY PMOD 
 3. On a custom ASIC interfacing with same PMOD
 
 ---
 
 #### Notes
 
-*Entry 1 -- August 31, 2024*
+1 - Aug 31, 2024
 
-Let's define the goal. I want to learn about hardware accelerators. A good way to learn is to build one. They come in all shapes and sized but since AI is all the rage and AI is also basically lots of matrix multiplications let's start with a mat mul device.
+Let's define the goal. I want to learn about hardware accelerators. A good way to learn is to build one. They come in all shapes and sizes but let's start with a simple mat mul device. Maybe I'll work up to some sick PCIe shit.
 
-I don't expect my device to necessarily run faster than my CPU. This is an educational project. Maybe we can get there though :)
+I don't expect my device to necessarily run faster than my CPU. This is an educational project. Maybe we'll get there though :)
 
-Let's set a scope. According to Tiny Tapeout I get around 40 bytes of memory in my ASIC tile. Let's do 2x2 matrices. Let's assume I'll need to store both so 2 * 2^2 * B where B is the size of each item --> 40 bytes / 8 = 40 bits per item. So we could do 32 bit floats. But let's keep things even simpler and make them 16 bit floats because then I could fit a whole 2*2 matrix in a single 8 bit UART packet. Once we get to ethernet we can move up in the world.
+For scope: According to Tiny Tapeout I get around 40 bytes of memory in my ASIC tile. Let's do 2x2 matrices. Let's assume I'll need to store both so 2 * 2^2 * B where B is the size of each item --> 40 bytes / 8 = 40 bits per item. So we could do 32 bit floats.
 
 ...
 
-Let's start with uint8s and that way I can fit whole matrices in a packet as well as metadata and checksum. Once I get to 100GbE I will have at least 46 bytes which is enough to send everything as one packet.
+Let's start with uint8s and that way I can fit whole matrices in a serial packet as well as metadata and checksum. Once I get to 100GbE I will have at least 46 bytes which is enough to send everything as one packet.
 
 As a basic flow for UART, the client will just send 2 consecutive packets with the following:
 1. Command ID - for now just multiplication but who knows...
@@ -45,6 +45,11 @@ TODO tomorrow:
 - Make packet gen script (Python probably)
 - Setup ICEStick environment
 
+---
+
+2 - Sep 2, 2024
+
+Getting the FPGA toolchain setup and hopefully a simple LED blink. I have done this before but on a different machine. Using this guide: https://www.digikey.com/en/maker/projects/introduction-to-fpga-part-2-toolchain-setup/563a9518cd11466fb6a75cf3cb684d6d
 
 
 

@@ -1,0 +1,19 @@
+# -----------------------------------------------------------------------------
+#- Leds example for the iCEstick board
+#- Constraint file (.pcf)
+# -----------------------------------------------------------------------------
+# --  Pinout: https://github.com/Obijuan/open-fpga-verilog-tutorial/blob/master/tutorial/doc/images/icestick_pinout.png
+# --  Guide: https://github.com/Obijuan/open-fpga-verilog-tutorial/blob/master/tutorial/doc/icestickusermanual.pdf
+
+# ------------ User Leds ------------------------------------------------------
+# Oscillator
+set_io              clk     21
+
+# LEDs
+set_io              led[0]  99
+set_io              led[1]  98
+set_io              led[2]  97
+set_io              led[3]  96
+
+# PMOD I/O
+set_io  -pullup yes rst_btn 78
