@@ -38,7 +38,7 @@ module uart(
         counter <= counter + 1;
 
         if (state == S_IDLE) begin
-            if (~rx) begin    
+            if (~rx && ~busy) begin    
                 busy    <= 1;
                 counter <= 0;
                 state   <= S_RX;
@@ -46,7 +46,7 @@ module uart(
                 rx_idx  <= 0;
             end
 
-            else if (send_request) begin
+            else if (send_request && ~busy) begin
                 busy    <= 1;
                 counter <= 0;
                 state   <= S_TX;
@@ -62,8 +62,7 @@ module uart(
 
                 if (rx_idx == 8) begin
                     rx_idx         <= 0;
-                    state          <= S_IDLE;        
-                    tx = 1'b1;
+                    state          <= S_IDLE;
                     byte_available <= 1;
                     busy           <= 0;
                 end

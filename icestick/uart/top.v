@@ -5,6 +5,7 @@ module top(
     input  rx,
     output tx,
     output D1,
+    output D5,
 );
 
     reg [7:0] serial_in;
@@ -44,11 +45,11 @@ module top(
             send_request <= 1;        
         end
 
-        // if (serial_available) begin
-        //     if (serial_in == "*") begin
-        //         D1 <= ~D1;
-        //     end
-        // end
+        if (serial_available) begin
+            if (serial_in == "*") begin
+                D5 <= ~D5;
+            end
+        end
     
     end
 

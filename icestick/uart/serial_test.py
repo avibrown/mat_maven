@@ -1,8 +1,9 @@
 import serial
+import time
 
 # Configure the serial port
 ser = serial.Serial('/dev/ttyUSB0', 115200)
-
+flag = 0
 try:
     while True:
         # Check for incoming bytes
@@ -11,16 +12,23 @@ try:
             try:
                 # Attempt to decode as UTF-8
                 incoming_text = incoming_bytes.decode('utf-8')
-                print(f"Received: {incoming_text}")
+                print(f"rx: {incoming_text}")
             except UnicodeDecodeError:
                 # Handle bytes that can't be decoded
-                print("Received raw bytes:", incoming_bytes.hex())
+                print("rx:", incoming_bytes.hex())
 
         # # Prompt for user input
         # message = input("Enter message to send: ")
+        time.sleep(0.1)
         
         # # Send the message
-        # ser.write(message.encode('utf-8'))
+        if flag == 0:
+            ser.write("*".encode('utf-8'))
+            flag = 1
+        else:
+            ser.write("4".encode('utf-8'))
+            flag = 0
+
         # print(f"Sent: {message}")
 
 except KeyboardInterrupt:
