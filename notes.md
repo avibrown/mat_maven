@@ -57,7 +57,11 @@ Got LEDs blinking. Tomorrow will start working on the UART.
 
 ---
 
-3 - 
+3 - Sep 3, 2024
+
+Got a basic UART Rx working (LED turns on when I send it "A" over serial). Now I need to flesh it out, add Tx capability.
+
+
 
 
 
