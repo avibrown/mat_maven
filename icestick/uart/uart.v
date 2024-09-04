@@ -71,27 +71,25 @@ module uart(
 
         else if (state == S_TX) begin
             D2 <= ~D2;
-            if (counter == CLKS_IN_BAUD) begin
-                if (tx_idx == 0) begin
-                    tx <= 0;
+            if (tx_idx == 0) begin
+                tx <= 0;
+            end
+            
+            else if (tx_idx > 0) begin
+                if (tx_idx == 9) begin
+                    tx <= 1;
+                end else begin
+                    tx <= tx_byte[tx_idx - 1];
                 end
+            end
 
-                else if (tx_idx > 0) begin
-                    if (tx_idx == 9) begin
-                        tx <= 1;
-                    end else begin
-                        tx <= tx_byte[tx_idx - 1];
-                    end
-                end
+            tx_idx  <= tx_idx + 1;
+            counter <= 0;
 
-                tx_idx  <= tx_idx + 1;
-                counter <= 0;
-
-                if (tx_idx == 10) begin
-                    state  <= S_IDLE;
-                    busy   <= 0;
-                    tx     <= 1;
-                end
+            if (tx_idx == 10) begin
+                state  <= S_IDLE;
+                busy   <= 0;
+                tx     <= 1;
             end
         end
     end
