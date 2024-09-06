@@ -10,17 +10,14 @@ packetB = b'\xFF\x01\x11\x05\x06\x07\x08\x1a'
 
 try:
     while True:
-        # ser.write(packetA)
-        # time.sleep(0.1)
-        # ser.write(packetB)
+        ser.write(packetA)
+        time.sleep(0.1)
+        ser.write(packetB)
+        time.sleep(0.1)
 
         if ser.in_waiting > 0:
             incoming_bytes = ser.read(ser.in_waiting)
-            try:
-                incoming_text = incoming_bytes.decode('utf-8')
-                print(f"rx: {incoming_text}")
-            except UnicodeDecodeError:
-                print("rx:", incoming_bytes.hex())
+            print("rx:", [byte for byte in incoming_bytes.hex()])
 
         # # # Prompt for user input
         # # message = input("Enter message to send: ")
@@ -30,7 +27,7 @@ try:
         # ser.write("****************".encode('utf-8'))
 
         # print(f"Sent: {message}")
-        # time.sleep(1)
+        time.sleep(1)
 
 except KeyboardInterrupt:
     print("\nExiting...")

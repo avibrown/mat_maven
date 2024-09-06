@@ -64,13 +64,13 @@ module top(
         counter      <= counter + 1;
         send_request <= 0;
         
-        if (counter == 1200000) begin
-            counter <= 0;
-            D1 <= ~D1;
-            serial_out   <= current_job;
-            // char <= char + 1;
-            send_request <= 1;        
-        end
+        // if (counter == 1200000) begin
+        //     counter <= 0;
+        //     D1 <= ~D1;
+        //     serial_out   <= "a";
+        //     // char <= char + 1;
+        //     send_request <= 1;        
+        // end
 
         if (serial_available) begin
 
@@ -85,7 +85,8 @@ module top(
                         else begin
                             current_mat <= B;
                             new_job     <= 0;
-                        end      
+                        end
+
                         hyperpacket_idx <= hyperpacket_idx + 1;
                     end
                 end
@@ -106,17 +107,21 @@ module top(
 
                 2: begin /* job ID */
                     if (new_job) begin
+                            D5 <= ~D5;
+                            serial_out <= serial_in;
+                            send_request <= 1;
                         current_job <= serial_in;
                         new_job <= 0;
-                        D5 <= ~D5;
                     end
                     else begin
                         if (current_job - serial_in != 0) begin
+                            D5 <= ~D5;
+                            serial_out <= serial_in;
+                            send_request <= 1;
                             /* something went wrong! restart... */
                             hyperpacket_idx <= 0;
                             op_in_progress  <= 0;
                             current_job     <= 0;
-                            new_job         <= 0;
                         end
                         else begin
                             hyperpacket_idx <= hyperpacket_idx + 1;
