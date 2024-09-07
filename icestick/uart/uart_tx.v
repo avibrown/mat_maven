@@ -48,7 +48,10 @@ module uart_tx (
      always @(posedge clk) begin
         counter <= counter + 1;
         case (state)
-            S_IDLE: counter <= 0;
+            S_IDLE: begin
+                counter <= 0; 
+                tx_idx <= 0;
+            end 
 
             S_TX: begin
                 if (tick) begin
@@ -70,8 +73,8 @@ module uart_tx (
             end
 
             S_STOP: begin
+                tx_idx <= 0;
                 counter <= 0;
-                tx_idx  <= 0;
             end
         endcase
      end

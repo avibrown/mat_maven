@@ -105,7 +105,7 @@ packetB = "\x00\x11\x01\x05\x06\x07\x08\x1a"
 
 ---
 
-5 --- Sep 5, 2024
+5 - Sep 6, 2024
 
 OK my initial approach to UART was pretty shitty and so I'm revamping it now such that Tx and Rx are seperate modules which I will combine into a main UART top module. They are working independently now.
 
@@ -113,5 +113,12 @@ Honestly I'm getting sidetracked from the main task which is mat mul but I am en
 
 ---
 
+6 - Sep 7, 2024
+
+I separated the UART module into Rx and Tx submodules which is much cleaner. Looks like it's working well, too. Now I can move on to the matmul nonsense...
+
+---
+
+7 - Sep 
 
 

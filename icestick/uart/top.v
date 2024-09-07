@@ -40,11 +40,10 @@ module top(
     always @(posedge clk) begin
         counter <= counter + 1;
 
-        if (counter >= 12_000_000) begin
+        if (counter >= 12_000_00) begin
             rx_enable <= 0;
             D5 <= ~D5;
-            tx_byte   <= test_char;
-            // test_char <= test_char + 1;     
+            tx_byte   <= test_char;   
             counter   <= 0;       
         end else begin
             rx_enable <= 1;
