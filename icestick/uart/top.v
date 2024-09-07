@@ -5,6 +5,7 @@ module top(
     input  rx,
     output tx,
     output D1,
+    output D2,
     output D5
 );
 
@@ -39,7 +40,7 @@ module top(
     reg [7:0]  current_job;
     reg        current_mat;
     localparam A = 0;
-    localparam B = 0;
+    localparam B = 1;
 
     mat_mul mat_mul (
         .clk(clk),
@@ -71,7 +72,7 @@ module top(
 
     assign tx_enable = ~rx_enable;
 
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         state <= next_state;
     end
 
@@ -94,9 +95,17 @@ module top(
                 /* ------ */
 
                 S_START: begin
-                    matA_idx    <= 0;
-                    matB_idx    <= 0;
-                    next_state  <= S_CHECK_JOB;
+                    if (byte_available) begin
+                        if (rx_byte == 8'h00) begin
+                            current_mat <= A;
+                            next_state <= S_CHECK_JOB;
+                        end else if (rx_byte == 8'h01) begin
+                            current_mat <= B;
+                            next_state <= S_CHECK_JOB;
+                        end else begin
+                            next_state <= S_IDLE;
+                        end
+                    end
                 end
 
                 /* ------ */
@@ -105,21 +114,16 @@ module top(
                     if (byte_available) begin
                         if (current_mat == A) begin
                             current_job <= rx_byte;
-                            next_state  <= S_MAT_A;
-                        end
-
+                            next_state <= S_MAT_A;
+                        end 
+                        
                         else if (current_mat == B) begin
-                            D5 <= ~D5;
-                            if (current_job - rx_byte != 0) begin
-                                next_state <= S_IDLE; /* means something went wrong... */
-                            end else begin
+                            if (current_job == rx_byte) begin
                                 next_state <= S_MAT_B;
-                            end
+                            end else begin
+                                next_state <= S_IDLE;
+                            end    
                         end
-                    end
-
-                    else begin /* restart if no byte available... */
-                        next_state <= S_IDLE;
                     end
                 end
 
@@ -133,8 +137,7 @@ module top(
                             2: a21 <= rx_byte;
                             3: a22 <= rx_byte;
                             default: begin
-                                next_state <= S_IDLE; /* start next mat */
-                                current_mat <= B;
+                                next_state  <= S_IDLE; /* start next mat */
                             end 
                         endcase
 
@@ -149,6 +152,7 @@ module top(
                 /* ------ */
                 
                 S_MAT_B: begin
+                            D5 <= ~D5;
                     if (byte_available) begin
                         case (matB_idx)
                             0: b11 <= rx_byte;
@@ -168,14 +172,6 @@ module top(
                         next_state <= S_IDLE;
                         current_mat <= A;
                     end
-                end
-
-                /* ------ */
-
-                S_STOP: begin
-                    rx_enable  <= 0;
-                    tx_byte    <= c11;
-                    next_state <= S_IDLE;
                 end
             endcase
 

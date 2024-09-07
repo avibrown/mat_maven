@@ -1,0 +1,102 @@
+
+
+                            D5 <= ~D5;
+
+
+
+                /* ------ */
+
+                S_IDLE: begin
+                    if (byte_available) begin
+                        if (rx_byte == 8'hFF) begin
+                            next_state <= S_START;
+                        end
+                    end
+                end
+
+                /* ------ */
+
+                S_START: begin
+                    matA_idx    <= 0;
+                    matB_idx    <= 0;
+                    next_state  <= S_CHECK_JOB;
+                end
+
+                /* ------ */
+
+                S_CHECK_JOB: begin
+                    if (byte_available) begin
+                        if (current_mat == A) begin
+                            current_job <= rx_byte;
+                            next_state  <= S_MAT_A;
+                        end
+
+                        else if (current_mat == B) begin
+                            D5 <= ~D5;
+                            if (current_job - rx_byte != 0) begin
+                                next_state <= S_IDLE; /* means something went wrong... */
+                            end else begin
+                                next_state <= S_MAT_B;
+                            end
+                        end
+                    end
+
+                    else begin /* restart if no byte available... */
+                        next_state <= S_IDLE;
+                    end
+                end
+
+                /* ------ */
+
+                S_MAT_A: begin
+                    if (byte_available) begin
+                        case (matA_idx)
+                            0: a11 <= rx_byte;
+                            1: a12 <= rx_byte;
+                            2: a21 <= rx_byte;
+                            3: a22 <= rx_byte;
+                            default: begin
+                                next_state <= S_IDLE; /* start next mat */
+                                current_mat <= B;
+                            end 
+                        endcase
+
+                        matA_idx <= matA_idx + 1;
+                    end
+
+                    else begin /* restart if no byte available... */
+                        next_state <= S_IDLE;
+                    end
+                end
+                
+                /* ------ */
+                
+                S_MAT_B: begin
+                    if (byte_available) begin
+                        case (matB_idx)
+                            0: b11 <= rx_byte;
+                            1: b12 <= rx_byte;
+                            2: b21 <= rx_byte;
+                            3: b22 <= rx_byte;
+                            default: begin
+                                next_state <= S_STOP; /* start next mat */
+                                current_mat <= A;
+                            end
+                        endcase
+
+                        matB_idx <= matB_idx + 1;
+                    end
+
+                    else begin /* restart if no byte available... */
+                        next_state <= S_IDLE;
+                        current_mat <= A;
+                    end
+                end
+
+                /* ------ */
+
+                S_STOP: begin
+                    rx_enable  <= 0;
+                    tx_byte    <= c11;
+                    next_state <= S_IDLE;
+                end
