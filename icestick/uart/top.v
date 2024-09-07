@@ -35,20 +35,18 @@ module top(
         tx_enable <= 0;
     end
 
-    // assign tx_enable = ~rx_enable;
+    assign tx_enable = ~rx_enable;
 
     always @(posedge clk) begin
         counter <= counter + 1;
 
         if (counter >= 12_000_000) begin
-            tx_enable <= 1;
             rx_enable <= 0;
             D5 <= ~D5;
             tx_byte   <= test_char;
             // test_char <= test_char + 1;     
             counter   <= 0;       
         end else begin
-            tx_enable <= 0;
             rx_enable <= 1;
         end
     end
@@ -57,7 +55,5 @@ module top(
         if (byte_available)
             D1 <= ~D1;
             test_char <= rx_byte;
-        if (rx_byte == "A") begin
-        end
-    end 
+        end 
 endmodule

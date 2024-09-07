@@ -24,7 +24,7 @@ module uart_rx (
     wire      tick;
     wire      byte_available;
     
-    assign    byte_available = rx_idx > 7;
+    assign    byte_available = rx_idx > 8;
     assign    tick           = counter >= CLKS_IN_BAUD;
 
     initial begin
@@ -35,7 +35,7 @@ module uart_rx (
     end
 
     /* Handle finite state machine flow */
-    always @(negedge clk) begin
+    always @(posedge clk) begin
         case (state)
             S_IDLE: next_state <= rx_enable && ~rx ? S_RX   : S_IDLE;
             S_RX:   next_state <= byte_available   ? S_STOP : S_RX;
@@ -51,7 +51,8 @@ module uart_rx (
         counter <= counter + 1;
         case (state)
             S_IDLE: begin
-                counter <= 0;         
+                counter <= 0;  
+                rx_idx  <= 0;        
             end
 
             S_RX: begin
@@ -63,8 +64,8 @@ module uart_rx (
             end
 
             S_STOP: begin
-                counter <= 0;
-                rx_idx  <= 0;                
+                rx_idx  <= rx_idx + 1;
+                counter <= 0;      
             end
         endcase        
     end
