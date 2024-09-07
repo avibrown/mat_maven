@@ -1,109 +1,29 @@
-// `default_nettype none
+`default_nettype none
 
-// module uart(
-//     input  clk,
-//     input  rx,
-//     output tx,
-//     input  [7:0] tx_byte,
-//     output [7:0] rx_byte,
-//     output busy,
-//     input  send_request,
-//     output byte_available,
-//     output D2,
-//     );
+module uart (
+    input        clk,
+    input        rx,
+    output       tx,
+    input  [7:0] tx_byte,
+    output [7:0] rx_byte,
+    input        tx_enable,
+    input        rx_enable,
+    output       byte_available
+);
 
-//     localparam BAUD         = 115200;
-//     localparam CLK_HZ       = 12000000;
-//     localparam CLKS_IN_BAUD = CLK_HZ / BAUD;
-//     localparam S_IDLE       = 2'b00;
-//     localparam S_RX         = 2'b01;
-//     localparam S_TX         = 2'b10;
+    uart_rx uart_rx (
+        .clk(clk),
+        .rx(rx),
+        .rx_enable(rx_enable),
+        .rx_byte(rx_byte),
+        .byte_available(byte_available)
+    );
 
-//     reg [6:0] counter;
-//     reg [1:0] state;
-//     reg [3:0] rx_idx;
-//     reg [4:0] tx_idx;
+    uart_tx uart_tx (
+        .clk(clk),
+        .tx(tx),
+        .tx_enable(tx_enable),
+        .tx_byte(tx_byte)
+    );
 
-//     initial begin
-//         counter    <= 0;
-//         state      <= S_IDLE;
-//         tx         <= 1;
-//         rx_byte    <= 0;
-//         rx_idx     <= 0;
-//         tx_idx     <= 0;
-//     end
-
-//     always @(posedge clk) begin
-//         counter <= counter + 1;
-
-//         case (state) begin
-//             S_IDLE: begin
-                
-//             end
-
-//             S_RX: begin
-                
-//             end
-//         endcase
-
-//         if (state == S_IDLE) begin
-//             if (~rx && ~busy) begin    
-//                 busy    <= 1;
-//                 counter <= 0;
-//                 state   <= S_RX;
-//                 rx_byte <= 0;
-//                 rx_idx  <= 0;
-//             end
-
-//             else if (send_request && ~busy) begin
-//                 busy    <= 1;
-//                 counter <= 0;
-//                 state   <= S_TX;
-//                 tx_idx  <= 0;
-//             end
-//         end
-
-//         if (state == S_RX) begin
-//             if (counter == CLKS_IN_BAUD) begin
-//                 rx_byte[rx_idx] <= rx;
-//                 rx_idx          <= rx_idx + 1;
-//                 counter         <= 0;
-
-//                 if (rx_idx == 8) begin
-//                     rx_idx         <= 0;
-//                     state          <= S_IDLE;
-//                     byte_available <= 1;
-//                     busy           <= 0;
-//                 end
-//             end
-//         end
-
-//         else if (state == S_TX) begin
-//             if (counter >= CLKS_IN_BAUD) begin
-//                 D2 <= ~D2;
-//                 if (tx_idx == 0) begin
-//                     tx <= 0;
-//                 end
-                
-//                 else if (tx_idx > 0) begin
-//                     if (tx_idx == 9) begin
-//                         tx <= 1;
-//                     end else begin
-//                         tx <= tx_byte[tx_idx - 1];
-//                     end
-//                 end
-
-//                 tx_idx  <= tx_idx + 1;
-
-//                 if (tx_idx == 10) begin
-//                     state  <= S_IDLE;
-//                     busy   <= 0;
-//                     tx     <= 1;
-//                 end
-
-//                 counter <= 0;
-//             end
-//         end
-//     end
-
-// endmodule
+endmodule

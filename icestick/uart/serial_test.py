@@ -11,11 +11,11 @@ test = b'\xDE\xAD\xBE\xEF'
 
 try:
     while True:
-        # ser.write("A".encode('utf-8'))
-        # time.sleep(0.2)
+        ser.write("a".encode('utf-8'))
+        time.sleep(0.2)
 
         if ser.in_waiting > 0:
-            print(ser.read(ser.in_waiting).decode('utf-8'))
+            print(ser.read(ser.in_waiting))
             # incoming_bytes = ser.read(ser.in_waiting)
             # [print(hex(byte), end=' ') for byte in incoming_bytes]
             # print()

@@ -4,61 +4,60 @@ module top(
     input  clk,
     input  rx,
     output tx,
+    output D1,
     output D5
 );
 
+    reg [23:0] counter;
 
-    /* --- rx --- */
-    reg       rx_enable;
+    reg [7:0] tx_byte;
     reg [7:0] rx_byte;
+    reg [7:0] test_char;
     wire      byte_available;
+    wire      tx_enable;
+    wire      rx_enable;
 
-    uart_rx uart_rx (
+    uart serial (
         .clk(clk),
         .rx(rx),
-        .rx_enable(rx_enable),
+        .tx(tx),
+        .tx_byte(tx_byte),
         .rx_byte(rx_byte),
+        .tx_enable(tx_enable),
+        .rx_enable(rx_enable),
         .byte_available(byte_available)
     );
 
-    /* --- tx --- */
-    reg       tx_enable;
-    reg [7:0] tx_byte;
-    reg [7:0] test_char;
-
-    uart_tx uart_tx (
-        .clk(clk),
-        .tx(tx),
-        .tx_enable(tx_enable),
-        .tx_byte(tx_byte)
-    );
-
     initial begin
-        rx_enable <= 0;
-        tx_enable <= 0;
         test_char <= "0";
+        counter   <= 0;
+        rx_enable <= 1;
+        tx_enable <= 0;
     end
 
-    reg [23:0] counter;
+    // assign tx_enable = ~rx_enable;
 
     always @(posedge clk) begin
-        // tx_enable <= 0;
         counter <= counter + 1;
-        // rx_enable <= 1;
-        // if (byte_available) begin
-        //     if (rx_byte == "A") begin
-        //         D5 <= ~D5;
-        //     end
-        // end
 
         if (counter >= 12_000_000) begin
             tx_enable <= 1;
+            rx_enable <= 0;
             D5 <= ~D5;
             tx_byte   <= test_char;
-            test_char <= test_char + 1;     
+            // test_char <= test_char + 1;     
             counter   <= 0;       
         end else begin
             tx_enable <= 0;
+            rx_enable <= 1;
         end
     end
+
+    always @(posedge clk) begin
+        if (byte_available)
+            D1 <= ~D1;
+            test_char <= rx_byte;
+        if (rx_byte == "A") begin
+        end
+    end 
 endmodule

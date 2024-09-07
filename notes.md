@@ -103,5 +103,15 @@ packetA = "\x00\x11\x00\x01\x02\x03\x04\x0a"
 packetB = "\x00\x11\x01\x05\x06\x07\x08\x1a"
 ```
 
+---
+
+5 --- Sep 5, 2024
+
+OK my initial approach to UART was pretty shitty and so I'm revamping it now such that Tx and Rx are seperate modules which I will combine into a main UART top module. They are working independently now.
+
+Honestly I'm getting sidetracked from the main task which is mat mul but I am enjoying this opportunity to harden my extremely noobish HDL skills.
+
+---
+
 
 
