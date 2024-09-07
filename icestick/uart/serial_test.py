@@ -11,13 +11,14 @@ test = b'\xDE\xAD\xBE\xEF'
 
 try:
     while True:
-        ser.write("A".encode('utf-8'))
+        # ser.write("A".encode('utf-8'))
         # time.sleep(0.2)
 
-        # if ser.in_waiting > 0:
-        #     incoming_bytes = ser.read(ser.in_waiting)
-        #     [print(hex(byte), end=' ') for byte in incoming_bytes]
-        #     print()
+        if ser.in_waiting > 0:
+            print(ser.read(ser.in_waiting).decode('utf-8'))
+            # incoming_bytes = ser.read(ser.in_waiting)
+            # [print(hex(byte), end=' ') for byte in incoming_bytes]
+            # print()
 
         # # # Prompt for user input
         # # message = input("Enter message to send: ")
@@ -26,7 +27,7 @@ try:
 
 
         # print(f"Sent: {message}")
-        time.sleep(1)
+        # time.sleep(1)
 
 except KeyboardInterrupt:
     print("\nExiting...")
