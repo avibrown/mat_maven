@@ -5,17 +5,18 @@ import random
 ser = serial.Serial('/dev/ttyUSB0', 115200)
 flag = 0
 
-packetA = b'\xFF\x00\x11\x01\x02\x03\x04\x0a'
-packetB = b'\xFF\x01\x11\x05\x06\x07\x08\x1a'
+packetA = b'\xFF\x11\x01\x02\x03\x04\x0a'
+packetB = b'\xFF\x11\x05\x06\x07\x08\x1a'
 test = b'\xDE\xAD\xBE\xEF'
 
 chars = "hello world"
 i = 0
 try:
     while True:
-        ser.write(chars[i].encode('utf-8'))
+        ser.write(packetA)
         time.sleep(0.1)
-        i = i + 1
+        ser.write(packetB)
+        time.sleep(0.1)
         if ser.in_waiting > 0:
             print("rx from fpga: ", ser.read(ser.in_waiting).decode('utf-8'))
             # incoming_bytes = ser.read(ser.in_waiting)
@@ -30,6 +31,7 @@ try:
 
         # print(f"Sent: {message}")
         # time.sleep(1)
+        time.sleep(1)
 
 except KeyboardInterrupt:
     print("\nExiting...")
