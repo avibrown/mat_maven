@@ -13,8 +13,8 @@ module top(
 
     /* --- serial --- */
 
-    reg [7:0] tx_byte;
     reg [7:0] rx_byte;
+    reg [7:0] tx_byte;
     reg [7:0] test_char;
     wire      byte_available;
     wire      tx_enable;
@@ -86,6 +86,8 @@ module top(
 
                 S_IDLE: begin
                     if (byte_available) begin
+                        rx_enable <= 0;
+                        tx_byte <= rx_byte;
                         if (rx_byte == 8'hFF) begin
                             next_state <= S_START;
                         end
@@ -96,6 +98,8 @@ module top(
 
                 S_START: begin
                     if (byte_available) begin
+                        rx_enable <= 0;
+                        tx_byte <= rx_byte;
                         if (rx_byte == 8'h00) begin
                             current_mat <= A;
                             next_state <= S_CHECK_JOB;
@@ -112,6 +116,8 @@ module top(
 
                 S_CHECK_JOB: begin
                     if (byte_available) begin
+                        rx_enable <= 0;
+                        tx_byte <= rx_byte;
                         if (current_mat == A) begin
                             current_job <= rx_byte;
                             next_state <= S_MAT_A;
@@ -131,6 +137,8 @@ module top(
 
                 S_MAT_A: begin
                     if (byte_available) begin
+                        rx_enable <= 0;
+                        tx_byte <= rx_byte;
                         case (matA_idx)
                             0: a11 <= rx_byte;
                             1: a12 <= rx_byte;

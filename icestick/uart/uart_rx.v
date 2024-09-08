@@ -35,11 +35,11 @@ module uart_rx (
     end
 
     /* Handle finite state machine flow */
-    always @(posedge clk) begin
+    always @(negedge clk) begin
         case (state)
             S_IDLE: next_state <= rx_enable && ~rx ? S_RX   : S_IDLE;
             S_RX:   next_state <= byte_available   ? S_STOP : S_RX;
-            S_STOP: next_state <= byte_available   ? S_STOP : S_IDLE;
+            S_STOP: next_state <= S_IDLE;
         endcase
     end
 
@@ -64,8 +64,8 @@ module uart_rx (
             end
 
             S_STOP: begin
-                rx_idx  <= rx_idx + 1;
-                counter <= 0;      
+                counter <= 0;   
+                rx_idx  <= 0;     
             end
         endcase        
     end
