@@ -13,10 +13,10 @@ module top(
 
     /* --- serial --- */
 
-    reg [7:0] rx_byte;
+    wire [7:0] rx_byte;
     reg [7:0] tx_byte;
     reg [7:0] test_char;
-    reg       byte_available;
+    wire       byte_available;
     reg       tx_enable;
     reg       rx_enable;
 
@@ -33,9 +33,20 @@ module top(
 
     /* --- mat mul --- */
 
-    reg [7:0]  a11, a12, a21, a22;
-    reg [7:0]  b11, b12, b21, b22;
-    reg [7:0]  c11, c12, c21, c22;
+    reg [7:0]  _a11, _a12, _a21, _a22;
+    wire [7:0]  a11,  a12,  a21,  a22;
+    wire [7:0]  b11,  b12,  b21,  b22;
+    reg [7:0]  _b11, _b12, _b21, _b22;
+    assign a11 = _a11;
+    assign a12 = _a12;
+    assign a21 = _a21;
+    assign a22 = _a22;
+    assign b11 = _b11;
+    assign b12 = _b12;
+    assign b21 = _b21;
+    assign b22 = _b22;
+
+    wire [7:0]  c11, c12, c21, c22;
     reg [2:0]  matA_idx, matB_idx;
     reg [7:0]  current_job;
     reg        current_mat;
@@ -138,10 +149,10 @@ module top(
                         rx_enable <= 0;
                         tx_byte <= rx_byte;
                         case (matA_idx)
-                            0: a11 <= rx_byte;
-                            1: a12 <= rx_byte;
-                            2: a21 <= rx_byte;
-                            3: a22 <= rx_byte;
+                            0: _a11 <= rx_byte;
+                            1: _a12 <= rx_byte;
+                            2: _a21 <= rx_byte;
+                            3: _a22 <= rx_byte;
                             default: begin
                                 next_state  <= S_IDLE; /* start next mat */
                             end 
@@ -161,10 +172,10 @@ module top(
                             D5 = ~D5;
                     if (byte_available) begin
                         case (matB_idx)
-                            0: b11 <= rx_byte;
-                            1: b12 <= rx_byte;
-                            2: b21 <= rx_byte;
-                            3: b22 <= rx_byte;
+                            0: _b11 <= rx_byte;
+                            1: _b12 <= rx_byte;
+                            2: _b21 <= rx_byte;
+                            3: _b22 <= rx_byte;
                             default: begin
                                 next_state <= S_STOP; /* start next mat */
                                 current_mat <= A;

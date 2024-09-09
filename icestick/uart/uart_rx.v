@@ -4,7 +4,7 @@ module uart_rx (
     input  wire      clk,
     input  wire      rx,
     input  wire      rx_enable,
-    output reg [7:0] rx_byte,
+    output wire [7:0] rx_byte,
     output wire      byte_available
 );
 
@@ -21,6 +21,9 @@ module uart_rx (
     reg [1:0] next_state;
     reg [3:0] rx_idx;
     wire      tick;
+
+    reg [7:0] _rx_byte;
+    assign rx_byte = _rx_byte;
     
     assign    byte_available = rx_idx > 8;
     assign    tick           = counter >= CLKS_IN_BAUD;
@@ -56,7 +59,7 @@ module uart_rx (
             S_RX: begin
                 if (tick) begin
                     counter         <= 0;
-                    rx_byte[rx_idx] <= rx;
+                    _rx_byte[rx_idx] <= rx;
                     rx_idx          <= rx_idx + 1;
                 end
             end
