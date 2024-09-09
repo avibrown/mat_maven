@@ -1,28 +1,26 @@
 `default_nettype none
 
 module uart_rx (
-    input   wire        clk,
-    input   wire        rx,
-    input   wire        rx_enable,
-    output  reg [7:0]   rx_byte,
-    output  wire        byte_available
+    input  wire      clk,
+    input  wire      rx,
+    input  wire      rx_enable,
+    output reg [7:0] rx_byte,
+    output wire      byte_available
 );
 
-    localparam  BAUD            = 115200;
-    localparam  CLK_HZ          = 12000000;
-    localparam  CLKS_IN_BAUD    = CLK_HZ / BAUD;
+    localparam  BAUD         = 115200;
+    localparam  CLK_HZ       = 12000000;
+    localparam  CLKS_IN_BAUD = CLK_HZ / BAUD;
 
-    reg [1:0]   state;
-    localparam  S_IDLE          = 0;
-    localparam  S_RX            = 1;
-    localparam  S_STOP          = 2;
+    localparam  S_IDLE       = 0;
+    localparam  S_RX         = 1;
+    localparam  S_STOP       = 2;
 
     reg [6:0] counter;
     reg [1:0] state;
     reg [1:0] next_state;
     reg [3:0] rx_idx;
     wire      tick;
-    wire      byte_available;
     
     assign    byte_available = rx_idx > 8;
     assign    tick           = counter >= CLKS_IN_BAUD;

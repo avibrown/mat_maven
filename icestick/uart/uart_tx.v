@@ -1,17 +1,16 @@
 `default_nettype none
 
 module uart_tx (
-    input   wire      clk,
-    output  wire      tx,
-    input   [7:0] tx_byte,
-    input   wire      tx_enable
+    input  wire  clk,
+    output reg   tx,
+    input  [7:0] tx_byte,
+    input  wire  tx_enable
 );
 
     localparam  BAUD         = 115200;
     localparam  CLK_HZ       = 12000000;
     localparam  CLKS_IN_BAUD = CLK_HZ / BAUD;
 
-    reg [1:0]   state;
     localparam  S_IDLE = 0;
     localparam  S_TX   = 1;
     localparam  S_STOP = 2;

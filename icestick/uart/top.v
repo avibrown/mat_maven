@@ -1,12 +1,12 @@
 `default_nettype none
 
 module top(
-    input  clk,
-    input  rx,
-    output tx,
-    output D1,
-    output D2,
-    output D5
+    input      clk,
+    input      rx,
+    output     tx,
+    // output reg D1,
+    // output reg D2,
+    output reg D5
 );
 
     reg [23:0] counter;
@@ -16,9 +16,9 @@ module top(
     reg [7:0] rx_byte;
     reg [7:0] tx_byte;
     reg [7:0] test_char;
-    wire      byte_available;
-    wire      tx_enable;
-    wire      rx_enable;
+    reg       byte_available;
+    reg       tx_enable;
+    reg       rx_enable;
 
     uart serial (
         .clk(clk),
@@ -69,8 +69,6 @@ module top(
         next_state     <= S_IDLE;
         current_mat    <= A;
     end
-
-    assign tx_enable = ~rx_enable;
 
     always @(posedge clk) begin
         state <= next_state;
@@ -160,7 +158,7 @@ module top(
                 /* ------ */
                 
                 S_MAT_B: begin
-                            D5 <= ~D5;
+                            D5 = ~D5;
                     if (byte_available) begin
                         case (matB_idx)
                             0: b11 <= rx_byte;
