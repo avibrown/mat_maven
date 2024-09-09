@@ -46,7 +46,7 @@ module top(
     assign b21 = _b21;
     assign b22 = _b22;
 
-    wire [7:0]  c11, c12, c21, c22;
+    wire [7:0] c11, c12, c21, c22;
     reg [2:0]  matA_idx, matB_idx;
     reg [7:0]  current_job;
     reg        current_mat;
@@ -86,6 +86,7 @@ module top(
     end
 
     always @(posedge clk) begin
+        tx_enable <= 0;
         rx_enable <= 1;
         counter <= counter + 1;
 
@@ -95,7 +96,7 @@ module top(
 
                 S_IDLE: begin
                     if (byte_available) begin
-                        rx_enable <= 0;
+                        tx_enable <= 1;
                         tx_byte <= rx_byte;
                         if (rx_byte == 8'hFF) begin
                             next_state <= S_START;
@@ -107,7 +108,7 @@ module top(
 
                 S_START: begin
                     if (byte_available) begin
-                        rx_enable <= 0;
+                        tx_enable <= 1;
                         tx_byte <= rx_byte;
                         if (rx_byte == 8'h00) begin
                             current_mat <= A;
@@ -125,7 +126,7 @@ module top(
 
                 S_CHECK_JOB: begin
                     if (byte_available) begin
-                        rx_enable <= 0;
+                        tx_enable <= 1;
                         tx_byte <= rx_byte;
                         if (current_mat == A) begin
                             current_job <= rx_byte;
@@ -146,7 +147,7 @@ module top(
 
                 S_MAT_A: begin
                     if (byte_available) begin
-                        rx_enable <= 0;
+                        tx_enable <= 1;
                         tx_byte <= rx_byte;
                         case (matA_idx)
                             0: _a11 <= rx_byte;
@@ -191,14 +192,5 @@ module top(
                     end
                 end
             endcase
-
-        // if (counter >= 12_000_00) begin
-        //     rx_enable <= 0;
-        //     D5 <= ~D5;
-        //     tx_byte   <= test_char;   
-        //     counter   <= 0;       
-        // end else begin
-        //     rx_enable <= 1;
-        // end
     end
 endmodule

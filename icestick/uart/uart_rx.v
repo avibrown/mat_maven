@@ -1,11 +1,11 @@
 `default_nettype none
 
 module uart_rx (
-    input  wire      clk,
-    input  wire      rx,
-    input  wire      rx_enable,
+    input  wire       clk,
+    input  wire       rx,
+    input  wire       rx_enable,
     output wire [7:0] rx_byte,
-    output wire      byte_available
+    output wire       byte_available
 );
 
     localparam  BAUD         = 115200;
@@ -25,7 +25,7 @@ module uart_rx (
     reg [7:0] _rx_byte;
     assign rx_byte = _rx_byte;
     
-    assign    byte_available = rx_idx > 8;
+    assign    byte_available = rx_idx  >= 8;
     assign    tick           = counter >= CLKS_IN_BAUD;
 
     initial begin
@@ -40,7 +40,7 @@ module uart_rx (
         case (state)
             S_IDLE: next_state <= rx_enable && ~rx ? S_RX   : S_IDLE;
             S_RX:   next_state <= byte_available   ? S_STOP : S_RX;
-            S_STOP: next_state <= S_IDLE;
+            S_STOP: next_state <= rx_idx <  9      ? S_STOP : S_IDLE;
         endcase
     end
 
@@ -58,15 +58,17 @@ module uart_rx (
 
             S_RX: begin
                 if (tick) begin
-                    counter         <= 0;
+                    counter          <= 0;
                     _rx_byte[rx_idx] <= rx;
-                    rx_idx          <= rx_idx + 1;
+                    rx_idx           <= rx_idx + 1;
                 end
             end
 
             S_STOP: begin
-                counter <= 0;   
-                rx_idx  <= 0;     
+                if (tick) begin
+                    counter <= 0;      
+                    rx_idx  <= rx_idx + 1;
+                end
             end
         endcase        
     end
