@@ -119,6 +119,9 @@ I separated the UART module into Rx and Tx submodules which is much cleaner. Loo
 
 ---
 
-7 - Sep 
+7 - Sep 10, 2024
+
+I got the UART module working pretty well. The matmul FSM is not quite working yet. All the bytes are coming in but the flow between states isn't working right. I think I know the issue lies somewhere in the `byte_available` signal but not sure how to fix it yet. 
+The Ethernet PHY is supposed to arrive today, and before it arrives I want to take a moment to look at proper FSM approaches in HDL.
 
 

@@ -70,6 +70,8 @@ module top(
     localparam S_MAT_A     = 3;
     localparam S_MAT_B     = 4;
     localparam S_STOP      = 5;
+    reg [1:0]  res_counter;
+    reg [7:0]  prev_byte;
 
     initial begin
         test_char      <= "0";
@@ -79,10 +81,13 @@ module top(
         state          <= S_IDLE;
         next_state     <= S_IDLE;
         current_mat    <= A;
+        res_counter    <= 0;
     end
 
-    always @(posedge clk) begin
-        state <= next_state;
+    always @(negedge clk) begin
+        if (~byte_available) begin
+            state <= next_state; 
+        end
     end
 
     always @(posedge clk) begin
@@ -98,7 +103,7 @@ module top(
                     if (byte_available) begin
                         tx_enable <= 1;
                         tx_byte <= rx_byte;
-                        if (rx_byte == 8'hFF) begin
+                        if (rx_byte == 255) begin
                             next_state <= S_START;
                         end
                     end
@@ -108,8 +113,6 @@ module top(
 
                 S_START: begin
                     if (byte_available) begin
-                        tx_enable <= 1;
-                        tx_byte <= rx_byte;
                         if (rx_byte == 8'h00) begin
                             current_mat <= A;
                             next_state <= S_CHECK_JOB;
@@ -126,8 +129,6 @@ module top(
 
                 S_CHECK_JOB: begin
                     if (byte_available) begin
-                        tx_enable <= 1;
-                        tx_byte <= rx_byte;
                         if (current_mat == A) begin
                             current_job <= rx_byte;
                             next_state <= S_MAT_A;
@@ -147,8 +148,8 @@ module top(
 
                 S_MAT_A: begin
                     if (byte_available) begin
-                        tx_enable <= 1;
-                        tx_byte <= rx_byte;
+                        // tx_enable <= 1;
+                        // tx_byte <= rx_byte;
                         case (matA_idx)
                             0: _a11 <= rx_byte;
                             1: _a12 <= rx_byte;
@@ -170,15 +171,15 @@ module top(
                 /* ------ */
                 
                 S_MAT_B: begin
-                            D5 = ~D5;
                     if (byte_available) begin
                         case (matB_idx)
                             0: _b11 <= rx_byte;
                             1: _b12 <= rx_byte;
                             2: _b21 <= rx_byte;
                             3: _b22 <= rx_byte;
-                            default: begin
-                                next_state <= S_STOP; /* start next mat */
+                            4: begin
+                            D5 <= ~D5;
+                                next_state <= S_STOP;
                                 current_mat <= A;
                             end
                         endcase
@@ -190,6 +191,42 @@ module top(
                         next_state <= S_IDLE;
                         current_mat <= A;
                     end
+                end
+
+                S_STOP: begin
+                    case (res_counter)
+                        0: begin
+                            // tx_enable   <= 1;
+                            // tx_byte     <= c11;
+                            res_counter <= res_counter + 1;
+                            
+                        end
+
+                        1: begin
+                            // tx_enable   <= 1;
+                            // tx_byte     <= c12;
+                            res_counter <= res_counter + 1;
+                        end
+
+                        2: begin
+                            // tx_enable   <= 1;
+                            // tx_byte     <= c21;
+                            res_counter <= res_counter + 1;
+                        end
+
+                        3: begin
+                            // tx_enable   <= 1;
+                            // tx_byte     <= c22;
+                            res_counter <= 0;
+                            next_state  <= S_IDLE; 
+                        end
+
+                        default: begin
+                            res_counter <= 0;
+                            next_state  <= S_IDLE; 
+                        end
+                    endcase
+                    
                 end
             endcase
     end
